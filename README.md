@@ -1,7 +1,8 @@
-# AI-Based-Pre-fall-Detection-system
+## AI-Based-Pre-fall-Detection-system
 This project is a real-time pre-fall detection and alert system designed for elderly and patient safety.
 It analyzes human posture from video input, detects possible falls, triggers emergency alerts, and logs events in a dashboard.
-FEATURES:- Real-time fall detection using computer vision
+## Features
+           Real-time fall detection using computer vision
            Warning and fall status detection
            Voice alert for emergency notification
            Email alert system for emergency response
