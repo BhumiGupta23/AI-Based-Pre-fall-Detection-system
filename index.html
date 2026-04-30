@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Fall Detection Control Center</title>
+<meta http-equiv="refresh" content="5">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial;
+background:#0A0F1F;
+color:white;
+padding:30px;
+}
+
+h1{
+text-align:center;
+color:#00FFFF;
+margin-bottom:30px;
+text-shadow:0 0 20px #00FFFF;
+font-size:42px;
+}
+
+/* CARDS */
+.cards{
+display:flex;
+justify-content:center;
+gap:30px;
+flex-wrap:wrap;
+margin-bottom:40px;
+}
+
+.card{
+background:#111827;
+padding:25px;
+width:220px;
+border-radius:20px;
+text-align:center;
+border:2px solid #00ffff;
+box-shadow:0 0 15px #00ffff, 0 0 35px rgba(0,255,255,.3);
+}
+
+.card h2{
+font-size:20px;
+margin-bottom:12px;
+color:#00ffff;
+}
+
+.card p{
+font-size:34px;
+font-weight:bold;
+color:#39FF14;
+text-shadow:0 0 15px #39FF14;
+}
+
+/* STATUS BOX */
+.status-box{
+width:500px;
+margin:0 auto 35px;
+padding:25px;
+text-align:center;
+border-radius:25px;
+background:#111827;
+}
+
+/* Dynamic colors */
+.safe-box{
+border:2px solid #39FF14;
+box-shadow:0 0 25px #39FF14;
+}
+
+.warning-box{
+border:2px solid #FFD700;
+box-shadow:0 0 25px #FFD700;
+}
+
+.fall-box{
+border:2px solid #ff3131;
+box-shadow:0 0 25px #ff3131;
+}
+
+.status-box h2{
+margin-bottom:12px;
+}
+
+.status-live{
+font-size:38px;
+font-weight:bold;
+}
+
+/* STATUS TEXT COLORS */
+.safe-text{
+color:#39FF14;
+text-shadow:0 0 20px #39FF14;
+}
+
+.warning-text{
+color:#FFD700;
+text-shadow:0 0 20px #FFD700;
+}
+
+.fall-text{
+color:#ff3131;
+text-shadow:0 0 20px #ff3131;
+}
+
+/* EMERGENCY BANNER */
+.emergency-banner{
+max-width:500px;
+margin:25px auto;
+padding:18px;
+text-align:center;
+font-size:26px;
+font-weight:bold;
+background:#2a2e74;
+color:white;
+border-radius:18px;
+box-shadow:0 0 20px #ff9f1c, 0 0 40px #ff9f1c;
+}
+
+/* CHART */
+.chart-box{
+width:420px;
+height:420px;
+margin:30px auto;
+padding:20px;
+background:#111827;
+border-radius:30px;
+border:2px solid #00ffff;
+box-shadow:0 0 25px #00ffff;
+}
+
+/* TABLE */
+.table-wrap{
+margin-top:45px;
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#111827;
+border-radius:20px;
+overflow:hidden;
+box-shadow:0 0 25px rgba(0,255,255,.25);
+}
+
+th{
+background:#000;
+color:#00ffff;
+padding:18px;
+font-size:18px;
+}
+
+td{
+padding:14px;
+text-align:center;
+border-bottom:1px solid #1f2937;
+}
+
+tr:hover{
+background:#182234;
+}
+
+.fall{
+color:#ff3131;
+font-weight:bold;
+}
+
+.normal{
+color:#39FF14;
+font-weight:bold;
+}
+
+img{
+width:110px;
+border-radius:14px;
+border:2px solid cyan;
+box-shadow:0 0 15px cyan;
+}
+
+.footer{
+text-align:center;
+margin-top:35px;
+color:#00ffff;
+opacity:.85;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>AI FALL DETECTION CONTROL CENTER</h1>
+
+<!-- CARDS -->
+<div class="cards">
+
+<div class="card">
+<h2>Total Falls</h2>
+<p>{{ fall_count }}</p>
+</div>
+
+<div class="card">
+<h2>Recovered</h2>
+<p>{{ recovered_count }}</p>
+</div>
+
+<div class="card">
+<h2>Alerts Sent</h2>
+<p>{{ alert_count }}</p>
+</div>
+
+</div>
+
+
+
+<!-- 🔥 CLEAN BANNER -->
+{% if data and data[0][3] == "Fall" %}
+<div class="emergency-banner">
+⚠️ MOST RECENT FALL ALERT
+</div>
+{% endif %}
+
+
+<!-- CHART -->
+<div class="chart-box">
+<canvas id="myChart"></canvas>
+</div>
+
+
+<!-- TABLE -->
+<div class="table-wrap">
+<table>
+<tr>
+<th>Date</th>
+<th>Time</th>
+<th>Status</th>
+<th>Angle</th>
+<th>Risk</th>
+<th>Recovery</th>
+<th>Alert</th>
+<th>Image</th>
+</tr>
+
+{% for row in data %}
+<tr>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+
+<td class="{% if row[3]=='Fall' %}fall{% else %}normal{% endif %}">
+{{ row[3] }}
+</td>
+
+<td>{{ row[4] }}</td>
+<td>{{ row[5] }}</td>
+<td>{{ row[6] }}</td>
+<td>{{ row[7] }}</td>
+
+<td>
+<img src="/images/{{ row[8].split('/')[-1] }}">
+</td>
+
+</tr>
+{% endfor %}
+</table>
+</div>
+
+
+<div class="footer">
+Smart Monitoring • Emergency Response • Privacy Protected
+</div>
+
+
+<script>
+let fallCount=0;
+let normalCount=0;
+
+{% for row in data %}
+{% if row[3]=='Fall' %}
+fallCount++;
+{% else %}
+normalCount++;
+{% endif %}
+{% endfor %}
+
+new Chart(
+document.getElementById('myChart'),
+{
+ type:'pie',
+ data:{
+ labels:['Fall','Normal'],
+ datasets:[{
+ data:[fallCount,normalCount],
+ backgroundColor:['#FF3131','#39FF14'],
+ borderWidth:2
+ }]
+ },
+ options:{
+ responsive:true,
+ maintainAspectRatio:false,
+ plugins:{
+ legend:{
+ labels:{ color:'white' }
+ }
+ }
+ }
+}
+)
+</script>
+
+</body>
+</html>
