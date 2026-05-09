@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Emergency Reports</title>
+
+<style>
+
+body{
+    background:#0A0F1F;
+    color:white;
+    font-family:Arial;
+    padding:30px;
+}
+
+h1{
+    text-align:center;
+    color:cyan;
+    font-size:45px;
+    margin-bottom:40px;
+    text-shadow:0 0 20px cyan;
+}
+
+.report-box{
+    background:#111827;
+    padding:25px;
+    margin:25px auto;
+    width:80%;
+    border-radius:20px;
+    border:2px solid cyan;
+    box-shadow:0 0 20px cyan;
+    transition:0.3s;
+}
+
+.report-box:hover{
+    transform:scale(1.08);
+}
+
+.report-box h2{
+    color:#ff4d4d;
+    margin-bottom:15px;
+    font-size:28px;
+}
+
+.report-box p{
+    margin:10px 0;
+    font-size:18px;
+}
+
+.back-btn{
+    position:absolute;
+    top:20px;
+    left:20px;
+    padding:12px 25px;
+    background:linear-gradient(45deg,#df1d08#b20b10);
+    color:white;
+    text-decoration:none;
+    border-radius:40px;
+    font-weight:bold;
+    box-shadow:0 0 20px cyan;
+    transition:0.3s;
+}
+
+.back-btn:hover{
+    transform:scale(1.08);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<a href="/" class="back-btn">⬅️ Back Dashboard</a>
+
+<h1>🚨 EMERGENCY REPORTS</h1>
+
+{% for row in data %}
+{% if row[3] == "Fall" %}
+
+<div class="report-box">
+
+<h2>⚠️ {{ row[3] }}</h2>
+
+<p><b>Date:</b> {{ row[1] }}</p>
+
+<p><b>Time:</b> {{ row[2] }}</p>
+
+<p><b>Angle:</b> {{ row[4] }}</p>
+
+<p><b>Risk:</b> {{ row[5] }}</p>
+
+<p><b>Recovery:</b> {{ row[6] }}</p>
+
+<p><b>Alert:</b> {{ row[7] }}</p>
+
+</div>
+{% endif %}
+{% endfor %}
+
+</body>
+</html>
